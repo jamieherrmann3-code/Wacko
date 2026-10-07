@@ -53,6 +53,23 @@ body {
   cursor: pointer;
 }
 
+.toggle-btn {
+  height: 44px;
+  padding: 0 14px;
+  font-size: 15px;
+  font-weight: bold;
+  border: 2px solid #663399;
+  border-radius: 4px;
+  background-color: white;
+  color: #663399;
+  cursor: pointer;
+}
+
+.toggle-btn.active {
+  background-color: #663399;
+  color: white;
+}
+
 .pattern-preview {
   margin: 10px auto;
 }

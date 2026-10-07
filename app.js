@@ -224,6 +224,8 @@ const PATTERN_ORDER = [
 const board = document.getElementById('board');
 const calledDisplay = document.getElementById('called');
 const ballsCalledCount = document.getElementById('ballsCalledCount');
+const ballsCalledBlock = document.getElementById('ballsCalledBlock');
+const toggleBallsCountBtn = document.getElementById('toggleBallsCountBtn');
 const newGameBtn = document.getElementById('newGameBtn');
 const patternSelect = document.getElementById('patternSelect');
 const patternPreview = document.getElementById('patternPreview');
@@ -275,6 +277,18 @@ function updateBallsCalledCount() {
     .filter(cell => cell.dataset.called === 'true' && cell.textContent !== '')
     .length;
   ballsCalledCount.textContent = count;
+}
+
+// The counter only shows for the Blackout pattern, or when manually toggled on.
+let manualCounterVisible = false;
+
+function updateCounterVisibility() {
+  const shouldShow = manualCounterVisible || patternSelect.value === 'blackout';
+  ballsCalledBlock.style.display = shouldShow ? '' : 'none';
+  toggleBallsCountBtn.classList.toggle('active', manualCounterVisible);
+  toggleBallsCountBtn.textContent = manualCounterVisible
+    ? 'Hide Number of Balls Called'
+    : 'Show Number of Balls Called';
 }
 
 function toggleNumber(btn, row, num) {
@@ -402,6 +416,7 @@ function startAnimation(sequence) {
 
 function showPattern(key) {
   const pattern = PATTERNS[key];
+  updateCounterVisibility();
   if (pattern.sequence) {
     startAnimation(pattern.sequence);
     return;
@@ -423,6 +438,10 @@ function newGame() {
 
 newGameBtn.addEventListener('click', newGame);
 patternSelect.addEventListener('change', () => showPattern(patternSelect.value));
+toggleBallsCountBtn.addEventListener('click', () => {
+  manualCounterVisible = !manualCounterVisible;
+  updateCounterVisibility();
+});
 
 buildBoard();
 buildPreviewGrid();
