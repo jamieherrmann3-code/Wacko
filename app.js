@@ -223,6 +223,7 @@ const PATTERN_ORDER = [
 
 const board = document.getElementById('board');
 const calledDisplay = document.getElementById('called');
+const ballsCalledCount = document.getElementById('ballsCalledCount');
 const newGameBtn = document.getElementById('newGameBtn');
 const patternSelect = document.getElementById('patternSelect');
 const patternPreview = document.getElementById('patternPreview');
@@ -263,6 +264,17 @@ function buildBoard() {
 
     board.appendChild(rowEl);
   });
+  updateBallsCalledCount();
+}
+
+// Counts only actual called numbers (highlighted and still showing their
+// digits) — not numbers merely hidden by a row cover or the All Even/Odd
+// Numbers board rule, since those aren't real ball draws.
+function updateBallsCalledCount() {
+  const count = ROWS.flatMap(row => rowCells(row))
+    .filter(cell => cell.dataset.called === 'true' && cell.textContent !== '')
+    .length;
+  ballsCalledCount.textContent = count;
 }
 
 function toggleNumber(btn, row, num) {
@@ -277,6 +289,7 @@ function toggleNumber(btn, row, num) {
   } else {
     calledDisplay.textContent = `${row.letter}${num}`;
   }
+  updateBallsCalledCount();
 }
 
 function toggleRow(row) {
@@ -288,6 +301,7 @@ function toggleRow(row) {
     cell.style.color = allCalled ? row.color : 'white';
     cell.textContent = allCalled ? cell.dataset.num : '';
   });
+  updateBallsCalledCount();
 }
 
 function rowCells(row) {
@@ -327,6 +341,7 @@ function applyParityCover(coverOddNumbers) {
       }
     });
   });
+  updateBallsCalledCount();
 }
 
 function buildPreviewGrid() {
