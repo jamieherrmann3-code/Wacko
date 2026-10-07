@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wacko</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <button id="newGameBtn" class="new-game">New Game</button>
+
+  <div class="pattern-picker">
+    <span class="pattern-label">Current Pattern:</span>
+    <select id="patternSelect" class="pattern-select"></select>
+  </div>
+</div>
+
+<h1 class="game-title">WACKO</h1>
+
+<div id="patternPreview" class="pattern-preview">
+  <div id="previewGrid" class="preview-grid"></div>
+  <div id="previewCaption" class="preview-caption"></div>
+</div>
+
+<hr>
+
+<div id="board" class="board"></div>
+
+<hr>
+
+<center>Last Number Called:</center>
+<div id="called" class="called-display"> </div>
+
+<script src="app.js"></script>
+</body>
+</html>
