@@ -247,11 +247,12 @@ function buildBoard() {
 
     for (let i = 0; i < 15; i++) {
       const num = row.start + i;
+      const displayNum = String(num).padStart(2, '0');
       const btn = document.createElement('button');
       btn.className = 'cell';
       btn.id = `btn${num}`;
-      btn.textContent = num;
-      btn.dataset.num = num;
+      btn.textContent = displayNum;
+      btn.dataset.num = displayNum;
       btn.dataset.called = 'false';
       btn.style.backgroundColor = 'white';
       btn.style.color = row.color;
