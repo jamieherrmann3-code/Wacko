@@ -358,6 +358,20 @@ function applyParityCover(coverOddNumbers) {
   updateBallsCalledCount();
 }
 
+// Reveals any numbers left hidden by a previous All Even/Odd Numbers
+// selection. Leaves individually-called numbers (which still show their
+// digit) untouched.
+function clearCoveredCells() {
+  ROWS.forEach(row => {
+    rowCells(row).forEach(cell => {
+      if (cell.dataset.called === 'true' && cell.textContent === '') {
+        setCellUncalled(cell, row);
+      }
+    });
+  });
+  updateBallsCalledCount();
+}
+
 function buildPreviewGrid() {
   previewGrid.innerHTML = '';
   for (let i = 0; i < 25; i++) {
@@ -414,9 +428,19 @@ function startAnimation(sequence) {
   }, ANIMATION_FRAME_MS);
 }
 
+// Tracks whether the previously selected pattern was All Even/Odd Numbers,
+// so leaving it can reveal whatever it left covered.
+let lastPatternHadBoardRule = false;
+
 function showPattern(key) {
   const pattern = PATTERNS[key];
   updateCounterVisibility();
+
+  if (!pattern.boardRule && lastPatternHadBoardRule) {
+    clearCoveredCells();
+  }
+  lastPatternHadBoardRule = Boolean(pattern.boardRule);
+
   if (pattern.sequence) {
     startAnimation(pattern.sequence);
     return;
