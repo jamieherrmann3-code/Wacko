@@ -17,68 +17,161 @@ function cellsWhere(predicate) {
   return cells;
 }
 
-// Wacko cycles through every possible line, in this order, while selected.
-const LINE_SEQUENCE = [
-  { cells: cellsWhere((r, c) => r === 0), caption: 'Top row' },
-  { cells: cellsWhere((r, c) => r === 1), caption: 'Row 2' },
-  { cells: cellsWhere((r, c) => r === 2), caption: 'Row 3' },
-  { cells: cellsWhere((r, c) => r === 3), caption: 'Row 4' },
-  { cells: cellsWhere((r, c) => r === 4), caption: 'Bottom row' },
-  { cells: cellsWhere((r, c) => c === 0), caption: 'Left column' },
-  { cells: cellsWhere((r, c) => c === 1), caption: 'Column 2' },
-  { cells: cellsWhere((r, c) => c === 2), caption: 'Column 3' },
-  { cells: cellsWhere((r, c) => c === 3), caption: 'Column 4' },
-  { cells: cellsWhere((r, c) => c === 4), caption: 'Right column' },
-  { cells: cellsWhere((r, c) => r === c), caption: 'Diagonal, top-left to bottom-right' },
-  { cells: cellsWhere((r, c) => r + c === 4), caption: 'Diagonal, top-right to bottom-left' },
-];
-const LINE_FRAME_MS = 1300;
+// Column order on the board is W, A, C, K, O (col 0-4).
+function colRows(col, rows) {
+  return rows.map(r => r * 5 + col);
+}
 
-// Order here is the order shown in the dropdown — Wacko (Line) stays first.
+const TOP_LEFT_STAMP = cellsWhere((r, c) => r <= 1 && c <= 1);
+const TOP_RIGHT_STAMP = cellsWhere((r, c) => r <= 1 && c >= 3);
+const BOTTOM_LEFT_STAMP = cellsWhere((r, c) => r >= 3 && c <= 1);
+const BOTTOM_RIGHT_STAMP = cellsWhere((r, c) => r >= 3 && c >= 3);
+
+function block2x3(rowStart, colStart) {
+  return cellsWhere((r, c) => r >= rowStart && r < rowStart + 2 && c >= colStart && c < colStart + 3);
+}
+
+// Postage Stamp cycles a 2x2 block clockwise through all four corners.
+const POSTAGE_STAMP_SEQUENCE = [
+  { cells: TOP_LEFT_STAMP, caption: 'Any corner 2x2 block wins' },
+  { cells: TOP_RIGHT_STAMP, caption: 'Any corner 2x2 block wins' },
+  { cells: BOTTOM_RIGHT_STAMP, caption: 'Any corner 2x2 block wins' },
+  { cells: BOTTOM_LEFT_STAMP, caption: 'Any corner 2x2 block wins' },
+];
+
+// Six Pack slides a 2x3 block through every position on the board, starting top-left.
+const SIX_PACK_SEQUENCE = [];
+for (let r = 0; r <= 3; r++) {
+  for (let c = 0; c <= 2; c++) {
+    SIX_PACK_SEQUENCE.push({ cells: block2x3(r, c), caption: 'Any 2x3 block of six wins' });
+  }
+}
+
+// Wacko cycles through every full line, then four corners, while selected.
+const LINE_WIN_CAPTION = 'Any full line or 4 corners wins';
+const LINE_SEQUENCE = [
+  { cells: cellsWhere((r, c) => r === 0), caption: LINE_WIN_CAPTION },
+  { cells: cellsWhere((r, c) => r === 1), caption: LINE_WIN_CAPTION },
+  { cells: cellsWhere((r, c) => r === 2), caption: LINE_WIN_CAPTION },
+  { cells: cellsWhere((r, c) => r === 3), caption: LINE_WIN_CAPTION },
+  { cells: cellsWhere((r, c) => r === 4), caption: LINE_WIN_CAPTION },
+  { cells: cellsWhere((r, c) => c === 0), caption: LINE_WIN_CAPTION },
+  { cells: cellsWhere((r, c) => c === 1), caption: LINE_WIN_CAPTION },
+  { cells: cellsWhere((r, c) => c === 2), caption: LINE_WIN_CAPTION },
+  { cells: cellsWhere((r, c) => c === 3), caption: LINE_WIN_CAPTION },
+  { cells: cellsWhere((r, c) => c === 4), caption: LINE_WIN_CAPTION },
+  { cells: cellsWhere((r, c) => r === c), caption: LINE_WIN_CAPTION },
+  { cells: cellsWhere((r, c) => r + c === 4), caption: LINE_WIN_CAPTION },
+  {
+    cells: cellsWhere((r, c) => (r === 0 || r === 4) && (c === 0 || c === 4)),
+    caption: LINE_WIN_CAPTION,
+  },
+];
+
+// Three Stamps cycles through every combination of 3-of-4 corner 2x2 stamps.
+const THREE_STAMPS_SEQUENCE = [
+  {
+    cells: [...TOP_LEFT_STAMP, ...TOP_RIGHT_STAMP, ...BOTTOM_LEFT_STAMP],
+    caption: 'Any 3 of 4 corner stamps win',
+  },
+  {
+    cells: [...TOP_LEFT_STAMP, ...TOP_RIGHT_STAMP, ...BOTTOM_RIGHT_STAMP],
+    caption: 'Any 3 of 4 corner stamps win',
+  },
+  {
+    cells: [...TOP_LEFT_STAMP, ...BOTTOM_LEFT_STAMP, ...BOTTOM_RIGHT_STAMP],
+    caption: 'Any 3 of 4 corner stamps win',
+  },
+  {
+    cells: [...TOP_RIGHT_STAMP, ...BOTTOM_LEFT_STAMP, ...BOTTOM_RIGHT_STAMP],
+    caption: 'Any 3 of 4 corner stamps win',
+  },
+];
+
+// Wacko (Any Line) always stays first; everything else is alphabetical by label.
 const PATTERNS = {
   line: {
-    label: 'Wacko (Any Line)',
-    animated: true,
+    label: 'Wacko (Line or Corners)',
+    sequence: LINE_SEQUENCE,
   },
-  fourCorners: {
-    label: 'Four Corners',
-    caption: 'All four corners must be filled',
-    cells: cellsWhere((r, c) => (r === 0 || r === 4) && (c === 0 || c === 4)),
+  allEven: {
+    label: 'All Even Numbers',
+    caption: 'All even numbers on board are called.',
+    boardRule: 'coverOdd',
   },
-  x: {
-    label: 'X (Double X)',
-    caption: 'Both diagonals must be filled',
-    cells: cellsWhere((r, c) => r === c || r + c === 4),
+  allOdd: {
+    label: 'All Odd Numbers',
+    caption: 'All odd numbers on board are called.',
+    boardRule: 'coverEven',
   },
-  postageStamp: {
-    label: 'Postage Stamp',
-    caption: 'A 2x2 block in any corner — top-left shown',
-    cells: cellsWhere((r, c) => r <= 1 && c <= 1),
+  blackout: {
+    label: 'Blackout (Coverall)',
+    caption: 'Every number on the card must be covered',
+    cells: cellsWhere(() => true),
   },
-  smallDiamond: {
-    label: 'Small Diamond',
-    caption: 'Diamond ring around the center',
+  diamond: {
+    label: 'Diamond',
+    caption: '',
     cells: cellsWhere((r, c) => Math.abs(r - 2) + Math.abs(c - 2) === 2),
   },
-  plusSign: {
-    label: 'Plus Sign (Cross)',
-    caption: 'Middle row and middle column',
-    cells: cellsWhere((r, c) => r === 2 || c === 2),
+  goalPost: {
+    label: 'Goal Post with Ball',
+    caption: 'Goal post uprights with the ball below',
+    cells: [
+      ...colRows(0, [0, 1, 2]),
+      ...colRows(1, [2]),
+      ...colRows(2, [0, 2, 3, 4]),
+      ...colRows(3, [2]),
+      ...colRows(4, [0, 1, 2]),
+    ],
   },
-  letterT: {
-    label: 'Letter T',
-    caption: 'Top row and middle column',
-    cells: cellsWhere((r, c) => r === 0 || c === 2),
+  hotDog: {
+    label: 'Hot Dog',
+    caption: '',
+    cells: cellsWhere((r, c) => c === 2 || (r >= 1 && r <= 3 && c >= 1 && c <= 3)),
+  },
+  innerPictureFrame: {
+    label: 'Inner Picture Frame',
+    caption: '',
+    cells: cellsWhere((r, c) => r >= 1 && r <= 3 && c >= 1 && c <= 3),
   },
   letterL: {
     label: 'Letter L',
     caption: 'Left column and bottom row',
     cells: cellsWhere((r, c) => c === 0 || r === 4),
   },
-  frame: {
-    label: 'Frame (Outside Edge)',
+  letterM: {
+    label: 'Letter M',
+    caption: '',
+    cells: cellsWhere((r, c) => c === 0 || c === 4 || (r <= 2 && (r === c || r + c === 4))),
+  },
+  letterT: {
+    label: 'Letter T',
+    caption: 'Top row and middle column',
+    cells: cellsWhere((r, c) => r === 0 || c === 2),
+  },
+  letterW: {
+    label: 'Letter W',
+    caption: '',
+    cells: cellsWhere((r, c) =>
+      c === 0 || c === 4 ||
+      (r === 2 && c === 2) ||
+      (r === 3 && (c === 1 || c === 3))
+    ),
+  },
+  pictureFrame: {
+    label: 'Picture Frame',
     caption: 'All outer border cells',
     cells: cellsWhere((r, c) => r === 0 || r === 4 || c === 0 || c === 4),
+  },
+  plusSign: {
+    label: 'Plus Sign (Cross)',
+    caption: 'Middle row and middle column',
+    cells: cellsWhere((r, c) => r === 2 || c === 2),
+  },
+  postageStamp: {
+    label: 'Postage Stamp',
+    sequence: POSTAGE_STAMP_SEQUENCE,
   },
   railroad: {
     label: 'Railroad Tracks',
@@ -87,15 +180,46 @@ const PATTERNS = {
   },
   sixPack: {
     label: 'Six Pack',
-    caption: 'Any 2x3 block — center-left shown',
-    cells: cellsWhere((r, c) => r >= 1 && r <= 2 && c >= 1 && c <= 3),
+    sequence: SIX_PACK_SEQUENCE,
   },
-  blackout: {
-    label: 'Blackout (Coverall)',
-    caption: 'Every cell on the card must be filled',
-    cells: cellsWhere(() => true),
+  threeStamps: {
+    label: 'Three Stamps',
+    sequence: THREE_STAMPS_SEQUENCE,
+  },
+  letterX: {
+    label: 'Letter X',
+    caption: 'Both diagonals must be filled',
+    cells: cellsWhere((r, c) => r === c || r + c === 4),
+  },
+  noPattern: {
+    label: 'No Pattern Selected',
+    caption: 'No pattern selected for current game.',
+    cells: [],
   },
 };
+
+const PATTERN_ORDER = [
+  'line',
+  'allEven',
+  'allOdd',
+  'blackout',
+  'diamond',
+  'goalPost',
+  'hotDog',
+  'innerPictureFrame',
+  'letterL',
+  'letterM',
+  'letterT',
+  'letterW',
+  'letterX',
+  'noPattern',
+  'pictureFrame',
+  'plusSign',
+  'postageStamp',
+  'railroad',
+  'sixPack',
+  'threeStamps',
+];
 
 const board = document.getElementById('board');
 const calledDisplay = document.getElementById('called');
@@ -105,7 +229,8 @@ const patternPreview = document.getElementById('patternPreview');
 const previewGrid = document.getElementById('previewGrid');
 const previewCaption = document.getElementById('previewCaption');
 
-const DEFAULT_PATTERN = 'line';
+const DEFAULT_PATTERN = 'noPattern';
+const ANIMATION_FRAME_MS = 1300;
 
 function buildBoard() {
   board.innerHTML = '';
@@ -126,6 +251,7 @@ function buildBoard() {
       btn.className = 'cell';
       btn.id = `btn${num}`;
       btn.textContent = num;
+      btn.dataset.num = num;
       btn.dataset.called = 'false';
       btn.style.backgroundColor = 'white';
       btn.style.color = row.color;
@@ -144,7 +270,10 @@ function toggleNumber(btn, row, num) {
   btn.style.backgroundColor = isCalled ? 'white' : row.color;
   btn.style.color = isCalled ? row.color : 'white';
 
-  if (!isCalled) {
+  if (isCalled) {
+    // Restore the number in case a row cover had blanked it out.
+    btn.textContent = btn.dataset.num;
+  } else {
     calledDisplay.textContent = `${row.letter}${num}`;
   }
 }
@@ -156,6 +285,7 @@ function toggleRow(row) {
     cell.dataset.called = String(!allCalled);
     cell.style.backgroundColor = allCalled ? 'white' : row.color;
     cell.style.color = allCalled ? row.color : 'white';
+    cell.textContent = allCalled ? cell.dataset.num : '';
   });
 }
 
@@ -165,6 +295,37 @@ function rowCells(row) {
     cells.push(document.getElementById(`btn${row.start + i}`));
   }
   return cells;
+}
+
+function setCellUncalled(cell, row) {
+  cell.dataset.called = 'false';
+  cell.style.backgroundColor = 'white';
+  cell.style.color = row.color;
+  cell.textContent = cell.dataset.num;
+}
+
+function setCellCovered(cell, row) {
+  cell.dataset.called = 'true';
+  cell.style.backgroundColor = row.color;
+  cell.style.color = 'white';
+  cell.textContent = '';
+}
+
+// Covers every odd (or every even) number on the real board so only the
+// other half shows. Re-applying always starts from a clean board so the
+// two rules never stack on top of each other.
+function applyParityCover(coverOddNumbers) {
+  ROWS.forEach(row => {
+    rowCells(row).forEach(cell => {
+      const isOdd = Number(cell.dataset.num) % 2 === 1;
+      const shouldCover = coverOddNumbers ? isOdd : !isOdd;
+      if (shouldCover) {
+        setCellCovered(cell, row);
+      } else {
+        setCellUncalled(cell, row);
+      }
+    });
+  });
 }
 
 function buildPreviewGrid() {
@@ -178,10 +339,10 @@ function buildPreviewGrid() {
 }
 
 function populatePatternSelect() {
-  Object.entries(PATTERNS).forEach(([key, pattern]) => {
+  PATTERN_ORDER.forEach(key => {
     const option = document.createElement('option');
     option.value = key;
-    option.textContent = pattern.label;
+    option.textContent = PATTERNS[key].label;
     patternSelect.appendChild(option);
   });
   patternSelect.value = DEFAULT_PATTERN;
@@ -195,41 +356,46 @@ function highlightCells(cells) {
   });
 }
 
-let lineTimer = null;
-let lineIndex = 0;
+let animTimer = null;
+let animIndex = 0;
+let activeSequence = null;
 
-function stopLineCycle() {
-  if (lineTimer) {
-    clearInterval(lineTimer);
-    lineTimer = null;
+function stopAnimation() {
+  if (animTimer) {
+    clearInterval(animTimer);
+    animTimer = null;
   }
 }
 
-function renderLineFrame() {
-  const frame = LINE_SEQUENCE[lineIndex];
-  previewCaption.textContent = `${frame.caption} — any full line wins`;
+function renderAnimFrame() {
+  const frame = activeSequence[animIndex];
+  previewCaption.textContent = frame.caption;
   highlightCells(frame.cells);
 }
 
-function startLineCycle() {
-  stopLineCycle();
-  lineIndex = 0;
-  renderLineFrame();
-  lineTimer = setInterval(() => {
-    lineIndex = (lineIndex + 1) % LINE_SEQUENCE.length;
-    renderLineFrame();
-  }, LINE_FRAME_MS);
+function startAnimation(sequence) {
+  stopAnimation();
+  activeSequence = sequence;
+  animIndex = 0;
+  renderAnimFrame();
+  animTimer = setInterval(() => {
+    animIndex = (animIndex + 1) % activeSequence.length;
+    renderAnimFrame();
+  }, ANIMATION_FRAME_MS);
 }
 
 function showPattern(key) {
-  if (PATTERNS[key].animated) {
-    startLineCycle();
+  const pattern = PATTERNS[key];
+  if (pattern.sequence) {
+    startAnimation(pattern.sequence);
     return;
   }
-  stopLineCycle();
-  const pattern = PATTERNS[key];
+  stopAnimation();
+  if (pattern.boardRule) {
+    applyParityCover(pattern.boardRule === 'coverOdd');
+  }
   previewCaption.textContent = pattern.caption;
-  highlightCells(pattern.cells);
+  highlightCells(pattern.cells || []);
 }
 
 function newGame() {
