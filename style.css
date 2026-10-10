@@ -5,10 +5,18 @@ body {
 }
 
 .game-title {
-  margin: 10px 0 0;
+  margin: 0;
   font-size: 48px;
   letter-spacing: 6px;
   color: #663399;
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 10px 10px 0;
 }
 
 .toolbar {
