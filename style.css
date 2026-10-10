@@ -5,18 +5,10 @@ body {
 }
 
 .game-title {
-  margin: 0;
-  font-size: 48px;
-  letter-spacing: 6px;
+  margin: 0 0 8px;
+  font-size: 28px;
+  letter-spacing: 3px;
   color: #663399;
-}
-
-.top-row {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
-  padding: 10px 10px 0;
 }
 
 .toolbar {
@@ -108,9 +100,13 @@ body {
   color: #663399;
 }
 
+.board {
+  padding-left: 10px;
+}
+
 .row {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   gap: clamp(2px, 0.5vw, 6px);
   margin: 6px 0;
