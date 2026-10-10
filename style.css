@@ -71,7 +71,7 @@ body {
 }
 
 .pattern-preview {
-  margin: 10px auto;
+  margin: 0;
 }
 
 .preview-grid {
@@ -104,20 +104,20 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
+  gap: clamp(2px, 0.5vw, 6px);
   margin: 6px 0;
 }
 
 .cell {
-  height: 60px;
-  width: 60px;
-  font-size: 26px;
+  height: clamp(24px, 5vw, 60px);
+  width: clamp(24px, 5vw, 60px);
+  font-size: clamp(11px, 2vw, 26px);
   border-radius: 4px;
   cursor: pointer;
 }
 
 .letter-cell {
-  font-size: 32px;
+  font-size: clamp(13px, 2.4vw, 32px);
   font-weight: bold;
   color: white;
   cursor: pointer;
