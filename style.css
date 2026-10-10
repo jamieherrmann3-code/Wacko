@@ -137,11 +137,12 @@ body {
 
 .bottom-stats {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   gap: 24px;
   flex-wrap: wrap;
   margin-top: 10px;
+  padding-left: 10px;
 }
 
 .stat-block {
