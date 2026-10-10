@@ -4,11 +4,19 @@ body {
   text-align: center;
 }
 
-.game-title {
+.wacko-header {
+  display: grid;
+  grid-template-columns: repeat(5, 44px);
+  gap: 4px;
+  justify-content: center;
   margin: 0 0 8px;
-  font-size: 28px;
-  letter-spacing: 3px;
-  color: #663399;
+  font-size: 30px;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
+
+.wacko-header span {
+  text-align: center;
 }
 
 .toolbar {
