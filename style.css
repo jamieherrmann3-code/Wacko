@@ -6,11 +6,11 @@ body {
 
 .wacko-header {
   display: grid;
-  grid-template-columns: repeat(5, 44px);
+  grid-template-columns: repeat(5, 34px);
   gap: 4px;
   justify-content: center;
   margin: 0 0 8px;
-  font-size: 30px;
+  font-size: 22px;
   font-weight: bold;
   font-family: Arial, sans-serif;
 }
@@ -84,15 +84,15 @@ body {
 
 .preview-grid {
   display: inline-grid;
-  grid-template-columns: repeat(5, 44px);
-  grid-template-rows: repeat(5, 44px);
+  grid-template-columns: repeat(5, 34px);
+  grid-template-rows: repeat(5, 34px);
   gap: 4px;
   justify-content: center;
 }
 
 .preview-cell {
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   border: 2px solid #663399;
   border-radius: 4px;
   background-color: white;
@@ -116,20 +116,20 @@ body {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: clamp(2px, 0.5vw, 6px);
+  gap: clamp(2px, 0.5vw, 10px);
   margin: 6px 0;
 }
 
 .cell {
-  height: clamp(24px, 5vw, 60px);
-  width: clamp(24px, 5vw, 60px);
-  font-size: clamp(11px, 2vw, 26px);
+  height: clamp(24px, 5vw, 100px);
+  width: clamp(24px, 5vw, 100px);
+  font-size: clamp(11px, 2vw, 44px);
   border-radius: 4px;
   cursor: pointer;
 }
 
 .letter-cell {
-  font-size: clamp(13px, 2.4vw, 32px);
+  font-size: clamp(13px, 2.4vw, 54px);
   font-weight: bold;
   color: white;
   cursor: pointer;
