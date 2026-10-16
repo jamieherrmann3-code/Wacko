@@ -133,7 +133,7 @@ const PATTERNS = {
   innerPictureFrame: {
     label: 'Inner Picture Frame',
     caption: '',
-    cells: cellsWhere((r, c) => r >= 1 && r <= 3 && c >= 1 && c <= 3),
+    cells: cellsWhere((r, c) => r >= 1 && r <= 3 && c >= 1 && c <= 3 && !(r === 2 && c === 2)),
   },
   letterL: {
     label: 'Letter L',
