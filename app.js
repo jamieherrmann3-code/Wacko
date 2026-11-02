@@ -239,7 +239,7 @@ const PATTERN_ORDER = [
 ];
 
 // Random Pattern never picks these — they aren't real board patterns.
-const RANDOM_PATTERN_EXCLUDED = ['allEven', 'allOdd', 'blackout', 'noPattern'];
+const RANDOM_PATTERN_EXCLUDED = ['allEven', 'allOdd', 'blackout', 'noPattern', 'postageStamp', 'sixPack'];
 
 const board = document.getElementById('board');
 const calledDisplay = document.getElementById('called');
