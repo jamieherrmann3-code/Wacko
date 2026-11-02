@@ -31,6 +31,10 @@ function block2x3(rowStart, colStart) {
   return cellsWhere((r, c) => r >= rowStart && r < rowStart + 2 && c >= colStart && c < colStart + 3);
 }
 
+function block3x3(rowStart, colStart) {
+  return cellsWhere((r, c) => r >= rowStart && r < rowStart + 3 && c >= colStart && c < colStart + 3);
+}
+
 // Postage Stamp cycles a 2x2 block clockwise through all four corners.
 const POSTAGE_STAMP_SEQUENCE = [
   { cells: TOP_LEFT_STAMP, caption: 'Any corner 2x2 block wins' },
@@ -44,6 +48,14 @@ const SIX_PACK_SEQUENCE = [];
 for (let r = 0; r <= 3; r++) {
   for (let c = 0; c <= 2; c++) {
     SIX_PACK_SEQUENCE.push({ cells: block2x3(r, c), caption: 'Any 2x3 block of six wins' });
+  }
+}
+
+// Nine Pack slides a 3x3 block through every position on the board, starting top-left.
+const NINE_PACK_SEQUENCE = [];
+for (let r = 0; r <= 2; r++) {
+  for (let c = 0; c <= 2; c++) {
+    NINE_PACK_SEQUENCE.push({ cells: block3x3(r, c), caption: 'Any 3x3 block of nine wins' });
   }
 }
 
@@ -191,6 +203,10 @@ const PATTERNS = {
     caption: 'Both diagonals must be filled',
     cells: cellsWhere((r, c) => r === c || r + c === 4),
   },
+  ninePack: {
+    label: 'Nine Pack',
+    sequence: NINE_PACK_SEQUENCE,
+  },
   noPattern: {
     label: 'No Pattern Selected',
     caption: 'No pattern selected for current game.',
@@ -212,6 +228,7 @@ const PATTERN_ORDER = [
   'letterT',
   'letterW',
   'letterX',
+  'ninePack',
   'noPattern',
   'pictureFrame',
   'plusSign',
