@@ -238,11 +238,15 @@ const PATTERN_ORDER = [
   'threeStamps',
 ];
 
+// Random Pattern never picks these — they aren't real board patterns.
+const RANDOM_PATTERN_EXCLUDED = ['allEven', 'allOdd', 'blackout', 'noPattern'];
+
 const board = document.getElementById('board');
 const calledDisplay = document.getElementById('called');
 const ballsCalledCount = document.getElementById('ballsCalledCount');
 const ballsCalledBlock = document.getElementById('ballsCalledBlock');
 const toggleBallsCountBtn = document.getElementById('toggleBallsCountBtn');
+const randomPatternBtn = document.getElementById('randomPatternBtn');
 const newGameBtn = document.getElementById('newGameBtn');
 const patternSelect = document.getElementById('patternSelect');
 const patternPreview = document.getElementById('patternPreview');
@@ -482,6 +486,12 @@ patternSelect.addEventListener('change', () => showPattern(patternSelect.value))
 toggleBallsCountBtn.addEventListener('click', () => {
   manualCounterVisible = !manualCounterVisible;
   updateCounterVisibility();
+});
+randomPatternBtn.addEventListener('click', () => {
+  const eligible = PATTERN_ORDER.filter(key => !RANDOM_PATTERN_EXCLUDED.includes(key));
+  const randomKey = eligible[Math.floor(Math.random() * eligible.length)];
+  patternSelect.value = randomKey;
+  showPattern(randomKey);
 });
 
 buildBoard();
